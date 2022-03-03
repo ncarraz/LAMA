@@ -203,7 +203,6 @@ def lowercase_samples(samples, use_negated_probes=False):
         sample["obj_label"] = sample["obj_label"].lower()
         sample["sub_label"] = sample["sub_label"].lower()
         lower_masked_sentences = []
-        """
         for sentence in sample["masked_sentences"]:
             sentence = sentence.lower()
             sentence = sentence.replace(base.MASK.lower(), base.MASK)
@@ -216,7 +215,7 @@ def lowercase_samples(samples, use_negated_probes=False):
                 sentence = sentence.replace(base.MASK.lower(), base.MASK)
                 lower_masked_sentences.append(sentence)
             sample["negated"] = lower_masked_sentences
-        """
+
         new_samples.append(sample)
     return new_samples
 
@@ -693,8 +692,8 @@ def main(args, shuffle_data=True, model=None):
     all_results = dict(
         list_of_results=list_of_results, global_MRR=MRR, global_P_at_10=Precision
     )
-    with open("{}/result.pkl".format(log_directory), "wb") as f:
-        pickle.dump(all_results, f)
+    #with open("{}/result.pkl".format(log_directory), "wb") as f:
+    #    pickle.dump(all_results, f)
 
     return Precision1
 
