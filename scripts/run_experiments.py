@@ -101,7 +101,7 @@ def run_experiments(
     type_count = defaultdict(list)
 
     results_file = open("last_results.csv", "w+")
-    output_file = open("output_results_{}.csv".format(my_args.relations), "a")
+    output_file = open("output_results_{}.csv".format(os.path.basename(my_args.relations)), "a")
 
     for relation in relations:
         pp.pprint(relation)
