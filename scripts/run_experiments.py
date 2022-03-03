@@ -16,47 +16,68 @@ from os.path import isfile, join
 from shutil import copyfile
 from collections import defaultdict
 
+my_parser = argparse.ArgumentParser(description='name of the relations file')
+my_parser.add_argument("--relations", help="relations file", type=str, default="data/relations.jsonl")
+my_parser.add_argument("--batch-size", help="batch size", type=int, default=128)
+my_parser.add_argument("--lowercase", help="lowercase samples", action="store_true")
+my_args = my_parser.parse_args()
+
 LMs = [
+    #{
+     #   "lm": "bert",
+     #   "label": "bert_base",
+    #    "models_names": ["bert"],
+    #    "bert_model_name": "bert-base-cased",
+    #    "bert_model_dir": "pre-trained_language_models/bert/cased_L-12_H-768_A-12",
+    #},
+    #{
+    #    "lm": "bert",
+    #    "label": "distilbert",
+    #    "models_names": ["bert"],
+    #   "bert_model_name": "distilbert-base-cased",
+    #},
+    #{
+     #   "lm": "roberta",
+     #   "label": "roberta",
+     #   "models_names": ["roberta"],
+     #   "roberta_model_name": "model.pt",
+     #   "roberta_model_dir": "pre-trained_language_models/roberta/",
+     #   "roberta_vocab_name": "dict.txt",
+     #   "max_sentence_length": 100
+     #},
     {
-        "lm": "transformerxl",
-        "label": "transformerxl",
-        "models_names": ["transformerxl"],
-        "transformerxl_model_name": "transfo-xl-wt103",
-        "transformerxl_model_dir": "pre-trained_language_models/transformerxl/transfo-xl-wt103/",
+        "lm": "bert",
+        "label": "bert_base_uncased",
+        "models_names": ["bert"],
+        "bert_model_name": "bert-base-uncased",
+        "bert_model_dir": "pre-trained_language_models/bert/uncased_L-12_H-768_A-12",
     },
-    {
-        "lm": "elmo",
-        "label": "elmo",
-        "models_names": ["elmo"],
-        "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway",
-        "elmo_vocab_name": "vocab-2016-09-10.txt",
-        "elmo_model_dir": "pre-trained_language_models/elmo/original",
-        "elmo_warm_up_cycles": 10,
-    },
-    {
-        "lm": "elmo",
-        "label": "elmo5B",
-        "models_names": ["elmo"],
-        "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway_5.5B",
-        "elmo_vocab_name": "vocab-enwiki-news-500000.txt",
-        "elmo_model_dir": "pre-trained_language_models/elmo/original5.5B/",
-        "elmo_warm_up_cycles": 10,
+     {
+        "lm": "bert",
+        "label": "electra_large",
+        "models_names": ["bert"],
+        "bert_model_name": "google/electra-large-generator",
     },
     {
         "lm": "bert",
-        "label": "bert_base",
+        "label": "albert-base-v2",
         "models_names": ["bert"],
-        "bert_model_name": "bert-base-cased",
-        "bert_model_dir": "pre-trained_language_models/bert/cased_L-12_H-768_A-12",
-    },
+        "bert_model_name": "albert-base-v2",
+    }
     {
         "lm": "bert",
-        "label": "bert_large",
+        "label": "ernie-2.0-large-en",
         "models_names": ["bert"],
-        "bert_model_name": "bert-large-cased",
-        "bert_model_dir": "pre-trained_language_models/bert/cased_L-24_H-1024_A-16",
+        "bert_model_name": "nghuyong/ernie-2.0-large-en",
     },
-]
+] #+ [
+  #  {
+  #      "lm": "bert",
+  #      "label": "multiberts-seed_{}".format(i),
+  #      "models_names": ["bert"],
+  #      "bert_model_name": "google/multiberts-seed_{}".format(i),
+  #  } for i in range(0, 25)
+#]
 
 
 def run_experiments(
@@ -80,6 +101,7 @@ def run_experiments(
     type_count = defaultdict(list)
 
     results_file = open("last_results.csv", "w+")
+    output_file = open("output_results_{}.csv".format(my_args.relations), "a")
 
     for relation in relations:
         pp.pprint(relation)
@@ -87,15 +109,15 @@ def run_experiments(
             "dataset_filename": "{}{}{}".format(
                 data_path_pre, relation["relation"], data_path_post
             ),
-            "common_vocab_filename": "pre-trained_language_models/common_vocab_cased.txt",
+            "common_vocab_filename": "pre-trained_language_models/common_vocab_lowercased.txt",
             "template": "",
             "bert_vocab_name": "vocab.txt",
-            "batch_size": 32,
+            "batch_size": my_args.batch_size,
             "logdir": "output",
             "full_logdir": "output/results/{}/{}".format(
                 input_param["label"], relation["relation"]
             ),
-            "lowercase": False,
+            "lowercase": my_args.lowercase,
             "max_sentence_length": 100,
             "threads": -1,
             "interactive": False,
@@ -137,28 +159,29 @@ def run_experiments(
             type_Precision1[relation["type"]].append(Precision1)
             data = load_file(PARAMETERS["dataset_filename"])
             type_count[relation["type"]].append(len(data))
-
+            
     mean_p1 = statistics.mean(all_Precision1)
     print("@@@ {} - mean P@1: {}".format(input_param["label"], mean_p1))
+    output_file.write("{},Total,{}\n".format(input_param["label"], mean_p1))
     results_file.close()
-
+    
     for t, l in type_Precision1.items():
-
-        print(
-            "@@@ ",
+        print("@@@ ",
             input_param["label"],
             t,
             statistics.mean(l),
             sum(type_count[t]),
-            len(type_count[t]),
-            flush=True,
-        )
-
+            len(type_count[t]), flush=True
+            )
+        
+        output_file.write("{},{},{}\n".format(input_param["label"], t, statistics.mean(l)))
+    output_file.close()
     return mean_p1, all_Precision1
 
 
+
 def get_TREx_parameters(data_path_pre="data/"):
-    relations = load_file("{}relations.jsonl".format(data_path_pre))
+    relations = load_file("{}".format(my_args.relations))
     data_path_pre += "TREx/"
     data_path_post = ".jsonl"
     return relations, data_path_pre, data_path_post
@@ -209,19 +232,18 @@ def run_all_LMs(parameters):
 
 if __name__ == "__main__":
 
-    print("1. Google-RE")
-    parameters = get_GoogleRE_parameters()
-    run_all_LMs(parameters)
+    #print("1. Google-RE")
+    #parameters = get_GoogleRE_parameters()
+    #run_all_LMs(parameters)
 
-    print("2. T-REx")
+    #print("2. T-REx")
     parameters = get_TREx_parameters()
     run_all_LMs(parameters)
 
-    print("3. ConceptNet")
-    parameters = get_ConceptNet_parameters()
-    run_all_LMs(parameters)
+    #print("3. ConceptNet")
+    #parameters = get_ConceptNet_parameters()
+    #run_all_LMs(parameters)
 
-    print("4. SQuAD")
-    parameters = get_Squad_parameters()
-    run_all_LMs(parameters)
-
+    #print("4. SQuAD")
+    #parameters = get_Squad_parameters()
+    #run_all_LMs(parameters)
