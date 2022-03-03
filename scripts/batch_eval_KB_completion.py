@@ -202,6 +202,7 @@ def lowercase_samples(samples, use_negated_probes=False):
     for sample in samples:
         sample["obj_label"] = sample["obj_label"].lower()
         sample["sub_label"] = sample["sub_label"].lower()
+        """
         lower_masked_sentences = []
         for sentence in sample["masked_sentences"]:
             sentence = sentence.lower()
@@ -215,7 +216,7 @@ def lowercase_samples(samples, use_negated_probes=False):
                 sentence = sentence.replace(base.MASK.lower(), base.MASK)
                 lower_masked_sentences.append(sentence)
             sample["negated"] = lower_masked_sentences
-
+        """
         new_samples.append(sample)
     return new_samples
 
