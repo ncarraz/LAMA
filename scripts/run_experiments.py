@@ -58,12 +58,6 @@ LMs = [
     },
     {
         "lm": "bert",
-        "label": "albert-base-v2",
-        "models_names": ["bert"],
-        "bert_model_name": "albert-base-v2",
-    },
-    {
-        "lm": "bert",
         "label": "ernie-2.0-large-en",
         "models_names": ["bert"],
         "bert_model_name": "nghuyong/ernie-2.0-large-en",
@@ -103,11 +97,12 @@ def run_experiments(
 
     for relation in relations:
         pp.pprint(relation)
+        common_vocab_file = "common_vocab_lowercased.txt" if my_args.lowercase else "common_vocab_cased.txt"
         PARAMETERS = {
             "dataset_filename": "{}{}{}".format(
                 data_path_pre, relation["relation"], data_path_post
             ),
-            "common_vocab_filename": "pre-trained_language_models/common_vocab_lowercased.txt",
+            "common_vocab_filename": "pre-trained_language_models/{}".format(common_vocab_file),
             "template": "",
             "bert_vocab_name": "vocab.txt",
             "batch_size": my_args.batch_size,
