@@ -40,7 +40,7 @@ LMs = [
      #   "label": "roberta",
      #   "models_names": ["roberta"],
      #   "roberta_model_name": "model.pt",
-     #   "roberta_model_dir": "pre-trained_language_models/roberta.large/",
+     #   "roberta_model_dir": "pre-trained_language_models/roberta/roberta.large/",
      #   "roberta_vocab_name": "dict.txt",
      #   "max_sentence_length": 100
      #},
