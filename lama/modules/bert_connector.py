@@ -10,6 +10,8 @@ from pytorch_pretrained_bert import BertTokenizer, BertForMaskedLM, BasicTokeniz
 import numpy as np
 from lama.modules.base_connector import *
 import torch.nn.functional as F
+from transformers import AutoTokenizer, AutoModelForMaskedLM
+
 
 
 class CustomBaseTokenizer(BasicTokenizer):
@@ -53,7 +55,7 @@ class Bert(Base_Connector):
 
         bert_model_name = args.bert_model_name
         dict_file = bert_model_name
-
+        """
         if args.bert_model_dir is not None:
             # load bert model from file
             bert_model_name = str(args.bert_model_dir) + "/"
@@ -63,6 +65,7 @@ class Bert(Base_Connector):
         else:
             # load bert model from huggingface cache
             pass
+        """
 
         # When using a cased model, make sure to pass do_lower_case=False directly to BaseTokenizer
         do_lower_case = False
@@ -70,29 +73,31 @@ class Bert(Base_Connector):
             do_lower_case=True
 
         # Load pre-trained model tokenizer (vocabulary)
-        self.tokenizer = BertTokenizer.from_pretrained(dict_file)
+        self.tokenizer = AutoTokenizer.from_pretrained(bert_model_name)
 
         # original vocab
         self.map_indices = None
-        self.vocab = list(self.tokenizer.ids_to_tokens.values())
-        self._init_inverse_vocab()
-
+        #self.vocab = list(self.tokenizer.ids_to_tokens.values())
+        #self._init_inverse_vocab()
+        self.vocab = list(dict(sorted(self.tokenizer.vocab.items(), key=lambda item: item[1])).keys())
+        self.inverse_vocab = self.tokenizer.vocab
+        
         # Add custom tokenizer to avoid splitting the ['MASK'] token
         custom_basic_tokenizer = CustomBaseTokenizer(do_lower_case = do_lower_case)
         self.tokenizer.basic_tokenizer = custom_basic_tokenizer
 
         # Load pre-trained model (weights)
         # ... to get prediction/generation
-        self.masked_bert_model = BertForMaskedLM.from_pretrained(bert_model_name)
+        self.masked_bert_model = AutoModelForMaskedLM.from_pretrained(bert_model_name)
 
         self.masked_bert_model.eval()
 
         # ... to get hidden states
-        self.bert_model = self.masked_bert_model.bert
+        #self.bert_model = self.masked_bert_model.bert
 
-        self.pad_id = self.inverse_vocab[BERT_PAD]
+        self.pad_id = self.tokenizer.pad_token_id
 
-        self.unk_index = self.inverse_vocab[BERT_UNK]
+        self.unk_index = self.tokenizer.unk_token_id
 
     def get_id(self, string):
         tokenized_text = self.tokenizer.tokenize(string)
@@ -225,10 +230,10 @@ class Bert(Base_Connector):
         with torch.no_grad():
             logits = self.masked_bert_model(
                 input_ids=tokens_tensor.to(self._model_device),
-                token_type_ids=segments_tensor.to(self._model_device),
+                #token_type_ids=segments_tensor.to(self._model_device),
                 attention_mask=attention_mask_tensor.to(self._model_device),
             )
-
+            logits = logits.logits
             log_probs = F.log_softmax(logits, dim=-1).cpu()
 
         token_ids_list = []
@@ -238,25 +243,4 @@ class Bert(Base_Connector):
         return log_probs, token_ids_list, masked_indices_list
 
     def get_contextual_embeddings(self, sentences_list, try_cuda=True):
-
-        # assume in input 1 or 2 sentences - in general, it considers only the first 2 sentences
-        if not sentences_list:
-            return None
-        if try_cuda:
-            self.try_cuda()
-
-        tokens_tensor, segments_tensor, attention_mask_tensor, masked_indices_list, tokenized_text_list = self.__get_input_tensors_batch(sentences_list)
-
-        with torch.no_grad():
-            all_encoder_layers, _ = self.bert_model(
-                tokens_tensor.to(self._model_device),
-                segments_tensor.to(self._model_device))
-
-        all_encoder_layers = [layer.cpu() for layer in all_encoder_layers]
-
-        sentence_lengths = [len(x) for x in tokenized_text_list]
-
-        # all_encoder_layers: a list of the full sequences of encoded-hidden-states at the end
-        # of each attention block (i.e. 12 full sequences for BERT-base, 24 for BERT-large), each
-        # encoded-hidden-state is a torch.FloatTensor of size [batch_size, sequence_length, hidden_size]
-        return all_encoder_layers, sentence_lengths, tokenized_text_list
+        return None
