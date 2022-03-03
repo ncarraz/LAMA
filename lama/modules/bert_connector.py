@@ -10,7 +10,7 @@ from pytorch_pretrained_bert import BertTokenizer, BertForMaskedLM, BasicTokeniz
 import numpy as np
 from lama.modules.base_connector import *
 import torch.nn.functional as F
-from transformers import AutoTokenizer, AutoModelForMaskedLM
+from transformers import AutoTokenizer, AutoModelForMaskedLM  
 
 
 
