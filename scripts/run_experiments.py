@@ -28,7 +28,6 @@ LMs = [
      #   "label": "bert_base",
     #    "models_names": ["bert"],
     #    "bert_model_name": "bert-base-cased",
-    #    "bert_model_dir": "pre-trained_language_models/bert/cased_L-12_H-768_A-12",
     #},
     #{
     #    "lm": "bert",
@@ -50,7 +49,6 @@ LMs = [
         "label": "bert_base_uncased",
         "models_names": ["bert"],
         "bert_model_name": "bert-base-uncased",
-        "bert_model_dir": "pre-trained_language_models/bert/uncased_L-12_H-768_A-12",
     },
      {
         "lm": "bert",
