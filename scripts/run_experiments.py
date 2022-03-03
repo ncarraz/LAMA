@@ -63,7 +63,7 @@ LMs = [
         "label": "albert-base-v2",
         "models_names": ["bert"],
         "bert_model_name": "albert-base-v2",
-    }
+    },
     {
         "lm": "bert",
         "label": "ernie-2.0-large-en",
