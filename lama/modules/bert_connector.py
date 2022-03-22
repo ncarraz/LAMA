@@ -79,11 +79,12 @@ class Bert(Base_Connector):
         self.map_indices = None
         #self.vocab = list(self.tokenizer.ids_to_tokens.values())
         #self._init_inverse_vocab()
-        self.vocab = list(dict(sorted(self.tokenizer.vocab.items(), key=lambda item: item[1])).keys())
-        
+        self.tokenizer_vocab = self.tokenizer.vocab
         if 'albert' in bert_model_name:
-            self.vocab  = self.convert_vocab(self.vocab)
-        # self.inverse_vocab = self.tokenizer.vocab
+            self.tokenizer_vocab  = self.convert_vocab(self.tokenizer_vocab)
+        self.vocab = list(dict(sorted(self.tokenizer_vocab.items(), key=lambda item: item[1])).keys())
+        
+        # self.inverse_vocab = self.tokenizer_vocab
         
         # Add custom tokenizer to avoid splitting the ['MASK'] token
         custom_basic_tokenizer = CustomBaseTokenizer(do_lower_case = do_lower_case)
@@ -105,13 +106,13 @@ class Bert(Base_Connector):
     def convert_vocab(self, vocab):
         SENTPIECE_BOUNDARY = '▁'    # (U+2581)
         WORDPIECE_CONTINUATION = '##'
-        converted = []
-        for v in vocab:
+        converted = {}
+        for v, index in vocab.items():
             if v.startswith(SENTPIECE_BOUNDARY):
-                converted.append(v[len(SENTPIECE_BOUNDARY):])    # strip marker
-            else:
-                converted.append(WORDPIECE_CONTINUATION+v)    # add marker
-        converted = [t for t in converted if t and not t.isspace()]
+                converted[v[len(SENTPIECE_BOUNDARY):]] = index    # strip marker
+            else: 
+                converted[WORDPIECE_CONTINUATION+v] = index    # add marker
+        converted = {t: index for t, index in converted.items() if t and not t.isspace()}
         return converted
     
     def get_id(self, string):
