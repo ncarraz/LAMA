@@ -106,13 +106,20 @@ class Bert(Base_Connector):
     def convert_vocab(self, vocab):
         SENTPIECE_BOUNDARY = '▁'    # (U+2581)
         WORDPIECE_CONTINUATION = '##'
+        BERT_SPECIAL = ['[PAD]', '[UNK]', '[CLS]', '[SEP]', '[MASK]']
+        SENTPIECE_SPECIAL = ['<unk>', '<s>', '</s>', '<pad>']
         converted = {}
+        i = 0
         for v, index in vocab.items():
             if v.startswith(SENTPIECE_BOUNDARY):
                 converted[v[len(SENTPIECE_BOUNDARY):]] = index    # strip marker
-            else: 
-                converted[WORDPIECE_CONTINUATION+v] = index    # add marker
-        converted = {t: index for t, index in converted.items() if t and not t.isspace()}
+            else:
+                if v in BERT_SPECIAL+SENTPIECE_SPECIAL:
+                    converted[v] = index
+                else:
+                    converted[WORDPIECE_CONTINUATION+v] = index    # add marker
+            i += 1
+        #converted = {t: index for t, index in converted.items() if t and not t.isspace()}
         return converted
     
     def get_id(self, string):
@@ -207,7 +214,7 @@ class Bert(Base_Connector):
         masked_indices = []
         for i in range(len(tokenized_text)):
             token = tokenized_text[i]
-            if token == MASK:
+            if token == MASK or token == " [MASK]":
                 masked_indices.append(i)
 
         indexed_tokens = self.tokenizer.convert_tokens_to_ids(tokenized_text)
