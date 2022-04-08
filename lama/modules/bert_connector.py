@@ -10,7 +10,7 @@ from pytorch_pretrained_bert import BertTokenizer, BertForMaskedLM, BasicTokeniz
 import numpy as np
 from lama.modules.base_connector import *
 import torch.nn.functional as F
-from transformers import AutoTokenizer, AutoModelForMaskedLM  
+from transformers import AutoTokenizer, AutoModelForMaskedLM, BertTokenizer, BertModel
 
 
 
@@ -73,7 +73,7 @@ class Bert(Base_Connector):
             do_lower_case=True
 
         # Load pre-trained model tokenizer (vocabulary)
-        self.tokenizer = AutoTokenizer.from_pretrained(bert_model_name)
+        self.tokenizer = BertTokenizer.from_pretrained(bert_model_name)
 
         # original vocab
         self.map_indices = None
@@ -92,7 +92,7 @@ class Bert(Base_Connector):
 
         # Load pre-trained model (weights)
         # ... to get prediction/generation
-        self.masked_bert_model = AutoModelForMaskedLM.from_pretrained(bert_model_name)
+        self.masked_bert_model = BertModel.from_pretrained(bert_model_name)
 
         self.masked_bert_model.eval()
 
