@@ -348,8 +348,8 @@ def main(args, shuffle_data=True, model=None):
     logger.info("\n" + msg + "\n")
 
     # dump arguments on file for log
-    with open("{}/args.json".format(log_directory), "w") as outfile:
-        json.dump(vars(args), outfile)
+    #with open("{}/args.json".format(log_directory), "w") as outfile:
+    #    json.dump(vars(args), outfile)
 
     # stats
     samples_with_negative_judgement = 0
