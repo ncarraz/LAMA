@@ -60,7 +60,7 @@ def init_logging(log_directory):
     logger = logging.getLogger("LAMA")
     logger.setLevel(logging.DEBUG)
 
-    os.makedirs(log_directory, exist_ok=True)
+    #os.makedirs(log_directory, exist_ok=True)
 
     # logging format
     # "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -69,16 +69,16 @@ def init_logging(log_directory):
     )
 
     # file handler
-    fh = logging.FileHandler(str(log_directory) + "/info.log")
-    fh.setLevel(logging.DEBUG)
-    fh.setFormatter(formatter)
+    #fh = logging.FileHandler(str(log_directory) + "/info.log")
+    #fh.setLevel(logging.DEBUG)
+    #fh.setFormatter(formatter)
 
     # console handler
     ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(logging.WARNING)
     ch.setFormatter(formatter)
 
-    logger.addHandler(fh)
+    #logger.addHandler(fh)
     logger.addHandler(ch)
 
     logger.propagate = False
