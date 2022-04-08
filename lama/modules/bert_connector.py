@@ -84,7 +84,7 @@ class Bert(Base_Connector):
             self.tokenizer_vocab  = self.convert_vocab(self.tokenizer_vocab)
         self.vocab = list(dict(sorted(self.tokenizer_vocab.items(), key=lambda item: item[1])).keys())
         
-        # self.inverse_vocab = self.tokenizer_vocab
+        self.inverse_vocab = self.tokenizer_vocab
         
         # Add custom tokenizer to avoid splitting the ['MASK'] token
         custom_basic_tokenizer = CustomBaseTokenizer(do_lower_case = do_lower_case)
