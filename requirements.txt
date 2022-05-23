@@ -1,7 +1,7 @@
 Cython==0.29.2
 torch==1.10.0
 pytorch-pretrained-bert==0.6.1
-allennlp
+allennlp==2.9.3
 spacy==2.1.8
 tqdm==4.63.0
 termcolor==1.1.0
