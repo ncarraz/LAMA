@@ -16,46 +16,45 @@ from os.path import isfile, join
 from shutil import copyfile
 from collections import defaultdict
 
+
+my_parser = argparse.ArgumentParser(description='Evaluate LMs on a relation')
+my_parser.add_argument("--relations", help="relations file", type=str, default="data/relations.jsonl")
+my_parser.add_argument("--batch-size", help="batch size", type=int, default=128)
+my_parser.add_argument("--lowercase", help="lowercase samples", action="store_true")
+my_args = my_parser.parse_args()
+
 LMs = [
     {
-        "lm": "transformerxl",
-        "label": "transformerxl",
-        "models_names": ["transformerxl"],
-        "transformerxl_model_name": "transfo-xl-wt103",
-        "transformerxl_model_dir": "pre-trained_language_models/transformerxl/transfo-xl-wt103/",
-    },
-    {
-        "lm": "elmo",
-        "label": "elmo",
-        "models_names": ["elmo"],
-        "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway",
-        "elmo_vocab_name": "vocab-2016-09-10.txt",
-        "elmo_model_dir": "pre-trained_language_models/elmo/original",
-        "elmo_warm_up_cycles": 10,
-    },
-    {
-        "lm": "elmo",
-        "label": "elmo5B",
-        "models_names": ["elmo"],
-        "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway_5.5B",
-        "elmo_vocab_name": "vocab-enwiki-news-500000.txt",
-        "elmo_model_dir": "pre-trained_language_models/elmo/original5.5B/",
-        "elmo_warm_up_cycles": 10,
-    },
-    {
         "lm": "bert",
-        "label": "bert_base",
+        "label": "bert-base-cased",
         "models_names": ["bert"],
-        "bert_model_name": "bert-base-cased",
-        "bert_model_dir": "pre-trained_language_models/bert/cased_L-12_H-768_A-12",
-    },
-    {
+        "bert_model_name": "bert-base-cased"
+        } 
+]
+
+LMs2 = [
+        {
         "lm": "bert",
-        "label": "bert_large",
+        "label": label,
         "models_names": ["bert"],
-        "bert_model_name": "bert-large-cased",
-        "bert_model_dir": "pre-trained_language_models/bert/cased_L-24_H-1024_A-16",
-    },
+        "bert_model_name": model_name} for label, model_name in [
+            ("roberta-base","roberta-base"), 
+            ("roberta-large", "roberta-large"),
+            ("longformer-base","allenai/longformer-base-4096"), 
+            ("longformer-large", "allenai/longformer-large-4096"),
+            ("distilroberta-base","distilroberta-base"), 
+            ("bert-base-cased", "bert-base-cased"),
+            ("bert-large-cased","bert-large-cased"), 
+            ("distilbert-base-cased", "distilbert-base-cased"),
+            ("gpt2","gpt2"),
+            ("xlnet-base-cased", "xlnet-base-cased"),
+            ("xlnet-large-cased", "xlnet-large-cased"),
+            ("bart-base", "facebook/bart-base"),
+            ("bart-large", "facebook/bart-large"),
+            ("t5-small","t5-small"),
+            ("t5-base","t5-base"),
+            ("t5-large","t5-large"),
+    ]
 ]
 
 
@@ -76,10 +75,12 @@ def run_experiments(
     pp = pprint.PrettyPrinter(width=41, compact=True)
 
     all_Precision1 = []
+    all_Precision10 = []
     type_Precision1 = defaultdict(list)
     type_count = defaultdict(list)
 
     results_file = open("last_results.csv", "w+")
+    output_file = open("results/results_{}.csv".format(os.path.basename(my_args.relations)), "a")
 
     for relation in relations:
         pp.pprint(relation)
@@ -87,15 +88,15 @@ def run_experiments(
             "dataset_filename": "{}{}{}".format(
                 data_path_pre, relation["relation"], data_path_post
             ),
-            "common_vocab_filename": "pre-trained_language_models/common_vocab_cased.txt",
+            "common_vocab_filename": "pre-trained_language_models/common_vocab_lowercased.txt" if my_args.lowercase else "pre-trained_language_models/common_vocab_cased.txt",
             "template": "",
             "bert_vocab_name": "vocab.txt",
-            "batch_size": 32,
+            "batch_size": my_args.batch_size,
             "logdir": "output",
             "full_logdir": "output/results/{}/{}".format(
                 input_param["label"], relation["relation"]
             ),
-            "lowercase": False,
+            "lowercase": my_args.lowercase,
             "max_sentence_length": 100,
             "threads": -1,
             "interactive": False,
@@ -124,9 +125,10 @@ def run_experiments(
             [model_type_name] = args.models_names
             model = build_model_by_name(model_type_name, args)
 
-        Precision1 = run_evaluation(args, shuffle_data=False, model=model)
+        Precision1, Precision10 = run_evaluation(args, shuffle_data=False, model=model)
         print("P@1 : {}".format(Precision1), flush=True)
         all_Precision1.append(Precision1)
+        all_Precision10.append(Precision10)
 
         results_file.write(
             "{},{}\n".format(relation["relation"], round(Precision1 * 100, 2))
@@ -139,7 +141,11 @@ def run_experiments(
             type_count[relation["type"]].append(len(data))
 
     mean_p1 = statistics.mean(all_Precision1)
+    mean_p10 = statistics.mean(all_Precision10)
     print("@@@ {} - mean P@1: {}".format(input_param["label"], mean_p1))
+    print("@@@ {} - mean P@10: {}".format(input_param["label"], mean_p10))
+    output_file.write("{},P@1,{}\n".format(input_param["label"], mean_p1))
+    output_file.write("{},P@10,{}\n".format(input_param["label"], mean_p1))
     results_file.close()
 
     for t, l in type_Precision1.items():
@@ -153,6 +159,9 @@ def run_experiments(
             len(type_count[t]),
             flush=True,
         )
+
+        # output_file.write("{},{},{}\n".format(input_param["label"], t, statistics.mean(l)))
+    output_file.close()
 
     return mean_p1, all_Precision1
 
@@ -208,15 +217,16 @@ def run_all_LMs(parameters):
 
 
 if __name__ == "__main__":
-
+    """
     print("1. Google-RE")
     parameters = get_GoogleRE_parameters()
     run_all_LMs(parameters)
 
     print("2. T-REx")
+    """
     parameters = get_TREx_parameters()
     run_all_LMs(parameters)
-
+    """
     print("3. ConceptNet")
     parameters = get_ConceptNet_parameters()
     run_all_LMs(parameters)
@@ -224,4 +234,4 @@ if __name__ == "__main__":
     print("4. SQuAD")
     parameters = get_Squad_parameters()
     run_all_LMs(parameters)
-
+    """

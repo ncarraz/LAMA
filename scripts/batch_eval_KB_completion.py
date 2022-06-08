@@ -696,7 +696,7 @@ def main(args, shuffle_data=True, model=None):
     with open("{}/result.pkl".format(log_directory), "wb") as f:
         pickle.dump(all_results, f)
 
-    return Precision1
+    return Precision1, Precision
 
 
 if __name__ == "__main__":
