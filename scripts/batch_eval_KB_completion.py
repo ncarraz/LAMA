@@ -202,20 +202,21 @@ def lowercase_samples(samples, use_negated_probes=False):
     for sample in samples:
         sample["obj_label"] = sample["obj_label"].lower()
         sample["sub_label"] = sample["sub_label"].lower()
+        """
         lower_masked_sentences = []
         for sentence in sample["masked_sentences"]:
             sentence = sentence.lower()
-            sentence = sentence.replace(base.MASK.lower(), base.MASK)
+            sentence = sentence.replace(model.mask.lower(), model.mask)
             lower_masked_sentences.append(sentence)
         sample["masked_sentences"] = lower_masked_sentences
 
         if "negated" in sample and use_negated_probes:
             for sentence in sample["negated"]:
                 sentence = sentence.lower()
-                sentence = sentence.replace(base.MASK.lower(), base.MASK)
+                sentence = sentence.replace(model.mask.lower(), model.mask)
                 lower_masked_sentences.append(sentence)
             sample["negated"] = lower_masked_sentences
-
+        """
         new_samples.append(sample)
     return new_samples
 
@@ -419,14 +420,14 @@ def main(args, shuffle_data=True, model=None):
             sample["obj_label"] = obj
             # sobstitute all sentences with a standard template
             sample["masked_sentences"] = parse_template(
-                args.template.strip(), sample["sub_label"].strip(), base.MASK
+                args.template.strip(), sample["sub_label"].strip(), model.mask
             )
             if args.use_negated_probes:
                 # substitute all negated sentences with a standard template
                 sample["negated"] = parse_template(
                     args.template_negated.strip(),
                     sample["sub_label"].strip(),
-                    base.MASK,
+                    model.mask,
                 )
             all_samples.append(sample)
 
