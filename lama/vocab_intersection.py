@@ -34,6 +34,23 @@ CASED_MODELS = [{
             ("t5-base","t5-base"),
             ("t5-large","t5-large"),
     ]
+] + [
+ {
+    # "ELMO ORIGINAL"
+    "lm": "elmo",
+    "elmo_model_dir": "pre-trained_language_models/elmo/original",
+    "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway",
+    "elmo_vocab_name": "vocab-2016-09-10.txt",
+    "elmo_warm_up_cycles": 5
+  },
+  {
+    # "ELMO ORIGINAL 5.5B"
+    "lm": "elmo",
+    "elmo_model_dir": "pre-trained_language_models/elmo/original5.5B/",
+    "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway_5.5B",
+    "elmo_vocab_name": "vocab-enwiki-news-500000.txt",
+    "elmo_warm_up_cycles": 5
+  }
 ]
 
 CASED_COMMON_VOCAB_FILENAME = "pre-trained_language_models/common_vocab_cased.txt"
@@ -99,7 +116,6 @@ def __vocab_intersection(models, filename):
         common_vocab = new_common_vocab
 
         # store common_vocab on file
-        os.makedirs("pre-trained_language_models")
         with open(filename, 'w') as f:
             for item in sorted(common_vocab):
                 f.write("{}\n".format(item))

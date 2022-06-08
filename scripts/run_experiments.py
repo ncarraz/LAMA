@@ -55,6 +55,25 @@ LMs2 = [
             ("t5-base","t5-base"),
             ("t5-large","t5-large"),
     ]
+] + [
+ {
+    # "ELMO ORIGINAL"
+    "lm": "elmo",
+    "label": "elmo",
+    "elmo_model_dir": "pre-trained_language_models/elmo/original",
+    "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway",
+    "elmo_vocab_name": "vocab-2016-09-10.txt",
+    "elmo_warm_up_cycles": 5
+  },
+  {
+    # "ELMO ORIGINAL 5.5B"
+    "lm": "elmo",
+    "label": "elmo-5.5B",
+    "elmo_model_dir": "pre-trained_language_models/elmo/original5.5B/",
+    "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway_5.5B",
+    "elmo_vocab_name": "vocab-enwiki-news-500000.txt",
+    "elmo_warm_up_cycles": 5
+  }
 ]
 
 
@@ -79,7 +98,6 @@ def run_experiments(
     type_Precision1 = defaultdict(list)
     type_count = defaultdict(list)
 
-    os.makedirs("results")
     results_file = open("last_results.csv", "w+")
     output_file = open("results/results_{}.csv".format(os.path.basename(my_args.relations)), "a")
 
