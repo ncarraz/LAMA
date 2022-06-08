@@ -146,7 +146,7 @@ def run_experiments(
     print("@@@ {} - mean P@1: {}".format(input_param["label"], mean_p1))
     print("@@@ {} - mean P@10: {}".format(input_param["label"], mean_p10))
     output_file.write("{},P@1,{}\n".format(input_param["label"], mean_p1))
-    output_file.write("{},P@10,{}\n".format(input_param["label"], mean_p1))
+    output_file.write("{},P@10,{}\n".format(input_param["label"], mean_p10))
     results_file.close()
 
     for t, l in type_Precision1.items():
