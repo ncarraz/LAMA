@@ -79,6 +79,7 @@ def run_experiments(
     type_Precision1 = defaultdict(list)
     type_count = defaultdict(list)
 
+    os.makedirs("results")
     results_file = open("last_results.csv", "w+")
     output_file = open("results/results_{}.csv".format(os.path.basename(my_args.relations)), "a")
 

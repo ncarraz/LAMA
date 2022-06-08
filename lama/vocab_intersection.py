@@ -9,6 +9,7 @@ from tqdm import tqdm
 import argparse
 import spacy
 import lama.modules.base_connector as base
+import os
 
 
 CASED_MODELS = [{
@@ -98,6 +99,7 @@ def __vocab_intersection(models, filename):
         common_vocab = new_common_vocab
 
         # store common_vocab on file
+        os.makedirs("pre-trained_language_models")
         with open(filename, 'w') as f:
             for item in sorted(common_vocab):
                 f.write("{}\n".format(item))
