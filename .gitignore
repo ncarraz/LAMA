@@ -72,6 +72,8 @@ LAMA-Internal/
 data/
 last_results.csv
 output/
+results/
+data
 
 last_*
 .nfs*

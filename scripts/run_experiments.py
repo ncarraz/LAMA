@@ -21,9 +21,10 @@ my_parser = argparse.ArgumentParser(description='Evaluate LMs on a relation')
 my_parser.add_argument("--relations", help="relations file", type=str, default="data/relations.jsonl")
 my_parser.add_argument("--batch-size", help="batch size", type=int, default=128)
 my_parser.add_argument("--lowercase", help="lowercase samples", action="store_true")
+my_parser.add_argument("--output-dir", help="output directory", type=str, default="output")
 my_args = my_parser.parse_args()
 
-LMs = [
+LMs2 = [
     {
         "lm": "bert",
         "label": "bert-base-cased",
@@ -32,7 +33,7 @@ LMs = [
         } 
 ]
 
-LMs2 = [
+LMs = [
         {
         "lm": "bert",
         "label": label,
@@ -103,6 +104,7 @@ def run_experiments(
 
     for relation in relations:
         pp.pprint(relation)
+        output_dir = os.path.join(my_args.output_dir, "results",os.path.basename(my_args.relations).split(".")[0])
         PARAMETERS = {
             "dataset_filename": "{}{}{}".format(
                 data_path_pre, relation["relation"], data_path_post
@@ -112,9 +114,7 @@ def run_experiments(
             "bert_vocab_name": "vocab.txt",
             "batch_size": my_args.batch_size,
             "logdir": "output",
-            "full_logdir": "output/results/{}/{}".format(
-                input_param["label"], relation["relation"]
-            ),
+            "full_logdir": os.path.join(output_dir, input_param["label"], relation["relation"]),
             "lowercase": my_args.lowercase,
             "max_sentence_length": 100,
             "threads": -1,
