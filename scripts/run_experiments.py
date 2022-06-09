@@ -57,24 +57,24 @@ LMs = [
             ("t5-large","t5-large"),
     ]
 ] + [
- {
-    # "ELMO ORIGINAL"
-    "lm": "elmo",
-    "label": "elmo",
-    "elmo_model_dir": "pre-trained_language_models/elmo/original",
-    "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway",
-    "elmo_vocab_name": "vocab-2016-09-10.txt",
-    "elmo_warm_up_cycles": 5
-  },
-  {
-    # "ELMO ORIGINAL 5.5B"
-    "lm": "elmo",
-    "label": "elmo-5.5B",
-    "elmo_model_dir": "pre-trained_language_models/elmo/original5.5B/",
-    "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway_5.5B",
-    "elmo_vocab_name": "vocab-enwiki-news-500000.txt",
-    "elmo_warm_up_cycles": 5
-  }
+    {
+        "lm": "elmo",
+        "label": "elmo",
+        "models_names": ["elmo"],
+        "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway",
+        "elmo_vocab_name": "vocab-2016-09-10.txt",
+        "elmo_model_dir": "pre-trained_language_models/elmo/original",
+        "elmo_warm_up_cycles": 10,
+    },
+    {
+        "lm": "elmo",
+        "label": "elmo5B",
+        "models_names": ["elmo"],
+        "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway_5.5B",
+        "elmo_vocab_name": "vocab-enwiki-news-500000.txt",
+        "elmo_model_dir": "pre-trained_language_models/elmo/original5.5B/",
+        "elmo_warm_up_cycles": 10,
+    },
 ]
 
 
@@ -99,12 +99,11 @@ def run_experiments(
     type_Precision1 = defaultdict(list)
     type_count = defaultdict(list)
 
-    results_file = open("last_results.csv", "w+")
+    output_dir = os.path.join(my_args.output_dir, "results",os.path.basename(my_args.relations).split(".")[0], input_param["label"])
     output_file = open("results/results_{}.csv".format(os.path.basename(my_args.relations)), "a")
 
     for relation in relations:
         pp.pprint(relation)
-        output_dir = os.path.join(my_args.output_dir, "results",os.path.basename(my_args.relations).split(".")[0])
         PARAMETERS = {
             "dataset_filename": "{}{}{}".format(
                 data_path_pre, relation["relation"], data_path_post
@@ -114,7 +113,7 @@ def run_experiments(
             "bert_vocab_name": "vocab.txt",
             "batch_size": my_args.batch_size,
             "logdir": "output",
-            "full_logdir": os.path.join(output_dir, input_param["label"], relation["relation"]),
+            "full_logdir": os.path.join(output_dir, relation["relation"]),
             "lowercase": my_args.lowercase,
             "max_sentence_length": 100,
             "threads": -1,
@@ -149,6 +148,7 @@ def run_experiments(
         all_Precision1.append(Precision1)
         all_Precision10.append(Precision10)
 
+        results_file = open(os.path.join(output_dir, "result.csv"), "a+")
         results_file.write(
             "{},{}\n".format(relation["relation"], round(Precision1 * 100, 2))
         )
