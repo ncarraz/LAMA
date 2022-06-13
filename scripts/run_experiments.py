@@ -24,7 +24,7 @@ my_parser.add_argument("--lowercase", help="lowercase samples", action="store_tr
 my_parser.add_argument("--output-dir", help="output directory", type=str, default="output")
 my_args = my_parser.parse_args()
 
-LMs2 = [
+LMs = [
     {
         "lm": "maskedlm",
         "label": "bert-base-cased",
@@ -33,7 +33,7 @@ LMs2 = [
         } 
 ]
 
-LMs = [
+LMs2 = [
         {
         "lm": "maskedlm",
         "label": label,

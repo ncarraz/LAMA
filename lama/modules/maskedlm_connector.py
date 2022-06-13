@@ -17,11 +17,11 @@ TOKENIZATION = {
     "facebook/bart-large":"bpe",
 }
 
-class Bert(Base_Connector):
+class MaskedLM(Base_Connector):
 
     def __init__(self, args, vocab_subset = None):
         super().__init__()
-        self.model_name = args.bert_model_name
+        self.model_name = args.model_name
         self.tokenization = TOKENIZATION[self.model_name]
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         self.__init_vocab() # Compatibility with existing code
