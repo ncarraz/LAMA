@@ -41,9 +41,9 @@ class MaskedLM(Base_Connector):
             converted_vocab = {}
             for w, i in self.tokenizer.vocab.items():
                 value = w
-                if value[0] == sep_token and value not in special_tokens:  # if the token starts with a whitespace
+                if value[0] == sep_token:  # if the token starts with a whitespace
                     value = value[1:]
-                else:
+                elif value not in special_tokens:
                     # this is subword information
                     value = "_{}_".format(value)
 
