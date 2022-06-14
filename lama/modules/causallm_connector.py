@@ -14,7 +14,7 @@ class CausalLM(Base_Connector):
         super().__init__()
 
         self.model_name = args.model_name
-        self.tokenizer = AutoTokenizer.from_pretrained(args.model_name)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         self.tokenizer.add_special_tokens({'pad_token': self.tokenizer.eos_token})
         self.tokenizer.add_special_tokens({'mask_token': "[MASK]"})
         self.tokenization = TOKENIZATION[self.model_name]
@@ -26,17 +26,11 @@ class CausalLM(Base_Connector):
         else:
             self._init_vocab()
 
-        self.model = AutoModelForCausalLM.from_pretrained(args.model_name)
+        self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
         self.model.eval()
 
     def _cuda(self):
         self.model.cuda()
-
-    def get_id(self, string):
-        tokenized_text = self.tokenizer.tokenize(string)
-        indexed_string = self.tokenizer.convert_tokens_to_ids(tokenized_text)
-        # indexed_string = self.convert_ids(indexed_string)
-        return indexed_string
 
     def get_batch_generation(self, sentences_list, logger=None, try_cuda=True):
         if try_cuda:
