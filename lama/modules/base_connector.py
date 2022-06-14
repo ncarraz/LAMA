@@ -132,14 +132,6 @@ class Base_Connector():
         self.vocab = list(dict(sorted(converted_vocab.items(), key=lambda item: item[1])).keys())
         self.inverse_vocab = converted_vocab
 
-    def get_id(self, string):
-        if "bpe" in self.tokenization:
-            string = " " + string
-            
-        tokenized_text = self.tokenizer.tokenize(string)
-        indexed_string = self.tokenizer.convert_tokens_to_ids(tokenized_text)
-        return indexed_string
-
     def try_cuda(self):
         """Move model to GPU if one is available."""
         if torch.cuda.is_available():

@@ -19,6 +19,13 @@ class MaskedLM(Base_Connector):
 
     def _cuda(self):
         self.masked_model.cuda()
+    
+    def get_id(self, string):
+        if "bpe" in self.tokenization:
+            string = " " + string  
+        tokenized_text = self.tokenizer.tokenize(string)
+        indexed_string = self.tokenizer.convert_tokens_to_ids(tokenized_text)
+        return indexed_string
 
     def get_batch_generation(self, sentences_list, logger= None, try_cuda=True):
         if not sentences_list:
