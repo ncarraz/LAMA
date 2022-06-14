@@ -20,7 +20,7 @@ def build_model_by_name(lm, args, verbose=True):
         elmo=Elmo,
         maskedlm=MaskedLM,
         gpt=GPT,
-        causallm_connector=CausalLM,
+        causallm=CausalLM,
     )
     if lm not in MODEL_NAME_TO_CLASS:
         raise ValueError("Unrecognized Language Model: %s." % lm)

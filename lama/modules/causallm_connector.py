@@ -17,13 +17,14 @@ class CausalLM(Base_Connector):
         self.tokenizer = AutoTokenizer.from_pretrained(args.model_name)
         self.tokenizer.add_special_tokens({'pad_token': self.tokenizer.eos_token})
         self.tokenizer.add_special_tokens({'mask_token': "[MASK]"})
+        self.tokenization = TOKENIZATION[self.model_name]
         self.mask = self.tokenizer.mask_token
 
         if self.model_name == "transfo-xl-wt103":
             self.vocab = list(self.tokenizer.idx2sym)
             self._init_inverse_vocab()
         else:
-            self.__init_vocab()
+            self._init_vocab()
 
         self.model = AutoModelForCausalLM.from_pretrained(args.model_name)
         self.model.eval()
@@ -40,6 +41,7 @@ class CausalLM(Base_Connector):
     def get_batch_generation(self, sentences_list, logger=None, try_cuda=True):
         if try_cuda:
             self.try_cuda()
+
         # Replace the added [MASK] token with EOS token to make embeddings work
         sentences_list = [self.tokenizer.eos_token + " " + item for sublist in sentences_list for item in sublist]
         src_tensor = self.tokenizer(sentences_list, padding=True, return_tensors="pt").input_ids
@@ -52,10 +54,13 @@ class CausalLM(Base_Connector):
         token_ids_list = [tokens[1:] for tokens in dest_tensor]
         token_ids_list = [[self.tokenizer.eos_token_id if i == self.tokenizer.mask_token_id else i for i in l] for l in token_ids_list]
         with torch.no_grad():
-            log_probs = self.model(src_tensor)
-            log_probs = log_probs.logits
+            log_probs = self.model(src_tensor.to(self._model_device))
+            if self.model_name == "transfo-xl-wt103":
+                log_probs = log_probs.prediction_scores.cpu()
+            else:
+                log_probs = log_probs.logits.cpu()
 
-        return src_tensor, token_ids_list, masked_indices_list
+        return log_probs, token_ids_list, masked_indices_list
 
     def get_contextual_embeddings(self, batched_sentence_list):
         pass

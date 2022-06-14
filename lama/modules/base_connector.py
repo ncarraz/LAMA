@@ -104,7 +104,7 @@ class Base_Connector():
     def _init_inverse_vocab(self):
         self.inverse_vocab = {w: i for i, w in enumerate(self.vocab)}
     
-    def __init_vocab(self):
+    def _init_vocab(self):
         if self.tokenization in ["bpe", "sentencepiece"]: 
             # Convert vocabulary to BERT
             special_tokens = [self.tokenizer.bos_token, self.tokenizer.eos_token, self.tokenizer.unk_token,
