@@ -10,11 +10,15 @@ class MaskedLM(Base_Connector):
         super().__init__()
         self.model_name = args.model_name
         self.tokenization = TOKENIZATION[self.model_name]
+        self.model_type = LM_TYPE[self.model_name]
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         self.__init_vocab() # Compatibility with existing code
         
         self.masked_model = AutoModelForMaskedLM.from_pretrained(self.model_name)
-        self.mask = self.tokenizer.mask_token
+        if "t5" in self.model_name:
+            self.mask = "<extra_id_0>" 
+        else:
+            self.mask = self.tokenizer.mask_token
         self.masked_model.eval() # EVAL ONLY ?
 
     def _cuda(self):
@@ -36,11 +40,21 @@ class MaskedLM(Base_Connector):
         # Compatibility with existing code
         sentences_list = [item for sublist in sentences_list for item in sublist]
         output = self.tokenizer(sentences_list, padding=True, return_tensors="pt")
-        masked_indices_list = np.argwhere(output.input_ids.numpy() == self.tokenizer.mask_token_id)[:,1]
+
+        if self.model_type == "masked":
+            masked_indices_list = np.argwhere(output.input_ids.numpy() == self.tokenizer.mask_token_id)[:,1]
+        elif self.model_type == "seq2seq":
+            masked_indices_list = [1] * len(sentences_list) # second generated token is always mask
+
         masked_indices_list = [[i] for i in masked_indices_list]
 
         with torch.no_grad():
-            scores = self.masked_model(**output.to(self._model_device)).logits
+            if self.model_type == "seq2seq":
+                scores = self.masked_model.generate(output.input_ids.to(self._model_device), 
+                                                    max_new_tokens=2, output_scores=True, return_dict_in_generate=True).scores
+                scores = torch.stack(scores, dim=1)
+            else:
+                scores = self.masked_model(**output.to(self._model_device)).logits
             log_probs = F.log_softmax(scores, dim=-1).cpu()
         # second returned value is off for seq2seq
         return log_probs, list(output.input_ids.cpu().numpy()), masked_indices_list

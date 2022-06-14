@@ -56,6 +56,25 @@ TOKENIZATION = {
     "xlnet-large-cased":"sentencepiece",
 }
 
+LM_TYPE = {
+     "roberta-base":"masked",
+     "roberta-large":"masked",
+     "allenai/longformer-base-4096":"masked",
+     "allenai/longformer-large-4096":"masked",
+     "distilroberta-base":"masked",
+     "bert-base-cased":"masked",
+     "bert-large-cased":"masked",
+     "distilbert-base-cased":"masked",
+     "gpt2":"causal",
+     "xlnet-base-cased":"causal",
+     "xlnet-large-cased":"causal",
+     "facebook/bart-base":"masked",
+     "facebook/bart-large":"masked",
+     "t5-small":"seq2seq",
+     "t5-base":"seq2seq",
+     "t5-large":"seq2seq"
+ }
+
 
 def default_tokenizer(line):
     """Default tokenizer for models that don't have one
