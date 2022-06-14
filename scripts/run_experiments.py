@@ -26,9 +26,9 @@ my_args = my_parser.parse_args()
 
 LMs = [
     {
-        "lm": "transformerxl",
+        "lm": "causallm",
         "label": "transformer-XL",
-        "models_names": ["transformerxl"],
+        "models_names": ["causallm"],
         "model_name": "transfo-xl-wt103"
         } 
 ]

@@ -9,7 +9,7 @@ import numpy as np
 from lama.modules.base_connector import *
 
 
-class TransformerXL(Base_Connector):
+class CausalLM(Base_Connector):
     def __init__(self, args):
         super().__init__()
 
@@ -18,8 +18,12 @@ class TransformerXL(Base_Connector):
         self.tokenizer.add_special_tokens({'pad_token': self.tokenizer.eos_token})
         self.tokenizer.add_special_tokens({'mask_token': "[MASK]"})
         self.mask = self.tokenizer.mask_token
-        self.vocab = list(self.tokenizer.idx2sym)
-        self._init_inverse_vocab()
+
+        if self.model_name == "transfo-xl-wt103":
+            self.vocab = list(self.tokenizer.idx2sym)
+            self._init_inverse_vocab()
+        else:
+            self.__init_vocab()
 
         self.model = AutoModelForCausalLM.from_pretrained(args.model_name)
         self.model.eval()

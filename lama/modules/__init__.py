@@ -7,7 +7,7 @@
 from .maskedlm_connector import MaskedLM
 from .elmo_connector import Elmo
 from .gpt_connector import GPT
-from .transformerxl_connector import TransformerXL
+from .transformerxl_connector import CausalLM
 
 
 def build_model_by_name(lm, args, verbose=True):

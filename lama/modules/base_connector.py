@@ -37,6 +37,19 @@ SPECIAL_SYMBOLS = [
 
 SPACE_NORMALIZER = re.compile(r"\s+")
 
+TOKENIZATION = {
+    "roberta-base":"bpe",
+    "roberta-large":"bpe",
+    "allenai/longformer-base-4096":"bpe",
+    "allenai/longformer-large-4096":"bpe",
+    "distilroberta-base":"bpe",
+    "bert-base-cased":"wordpiece",
+    "bert-large-cased":"wordpiece",
+    "distilbert-base-cased":"wordpiece",
+    "facebook/bart-base":"bpe",
+    "facebook/bart-large":"bpe",
+}
+
 
 def default_tokenizer(line):
     """Default tokenizer for models that don't have one
