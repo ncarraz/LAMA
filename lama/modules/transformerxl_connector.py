@@ -17,6 +17,7 @@ class TransformerXL(Base_Connector):
         self.tokenizer = AutoTokenizer.from_pretrained(args.model_name)
         self.tokenizer.add_special_tokens({'pad_token': self.tokenizer.eos_token})
         self.tokenizer.add_special_tokens({'mask_token': "[MASK]"})
+        self.mask = self.tokenizer.mask_token
         self.vocab = list(self.tokenizer.idx2sym)
         self._init_inverse_vocab()
 

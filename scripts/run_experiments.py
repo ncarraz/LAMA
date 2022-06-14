@@ -26,10 +26,10 @@ my_args = my_parser.parse_args()
 
 LMs = [
     {
-        "lm": "maskedlm",
-        "label": "bert-base-cased",
-        "models_names": ["maskedlm"],
-        "model_name": "bert-base-cased"
+        "lm": "transformerxl",
+        "label": "transformer-XL",
+        "models_names": ["transformerxl"],
+        "model_name": "transfo-xl-wt103"
         } 
 ]
 
@@ -110,7 +110,6 @@ def run_experiments(
             ),
             "common_vocab_filename": "pre-trained_language_models/common_vocab_lowercased.txt" if my_args.lowercase else "pre-trained_language_models/common_vocab_cased.txt",
             "template": "",
-            "bert_vocab_name": "vocab.txt",
             "batch_size": my_args.batch_size,
             "logdir": "output",
             "full_logdir": os.path.join(output_dir, relation["relation"]),

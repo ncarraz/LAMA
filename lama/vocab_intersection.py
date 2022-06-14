@@ -16,7 +16,7 @@ CASED_MODELS = [{
         "lm": "maskedlm",
         "label": label,
         "models_names": ["maskedlm"],
-        "bert_model_name": model_name,} for label, model_name in [
+        "model_name": model_name,} for label, model_name in [
             ("roberta-base","roberta-base"), 
             ("roberta-large", "roberta-large"),
             ("longformer-base","allenai/longformer-base-4096"), 
