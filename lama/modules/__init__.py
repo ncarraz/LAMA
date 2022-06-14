@@ -7,7 +7,7 @@
 from .maskedlm_connector import MaskedLM
 from .elmo_connector import Elmo
 from .gpt_connector import GPT
-from .transformerxl_connector import CausalLM
+from .causallm_connector import CausalLM
 
 
 def build_model_by_name(lm, args, verbose=True):
@@ -20,7 +20,7 @@ def build_model_by_name(lm, args, verbose=True):
         elmo=Elmo,
         maskedlm=MaskedLM,
         gpt=GPT,
-        transformerxl=TransformerXL,
+        causallm_connector=CausalLM,
     )
     if lm not in MODEL_NAME_TO_CLASS:
         raise ValueError("Unrecognized Language Model: %s." % lm)
