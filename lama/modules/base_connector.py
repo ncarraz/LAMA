@@ -54,6 +54,7 @@ TOKENIZATION = {
     "gpt2":"bpe",
     "xlnet-base-cased":"sentencepiece",
     "xlnet-large-cased":"sentencepiece",
+    "transfo-xl-wt103":"word"
 }
 
 LM_TYPE = {
