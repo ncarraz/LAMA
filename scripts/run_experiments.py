@@ -26,10 +26,10 @@ my_args = my_parser.parse_args()
 
 LMs = [
     {
-        "lm": "causallm",
-        "label": "gpt-2",
-        "models_names": ["causallm"],
-        "model_name": "gpt2"
+        "lm": "maskedlm",
+        "label": "t5-large",
+        "models_names": ["maskedlm"],
+        "model_name": "t5-large"
         } 
 ]
 

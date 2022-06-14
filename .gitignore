@@ -74,6 +74,7 @@ last_results.csv
 output/
 results/
 data
+pre-trained_language_models
 
 last_*
 .nfs*

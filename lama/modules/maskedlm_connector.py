@@ -12,13 +12,14 @@ class MaskedLM(Base_Connector):
         self.tokenization = TOKENIZATION[self.model_name]
         self.model_type = LM_TYPE[self.model_name]
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-        self.__init_vocab() # Compatibility with existing code
+        self._init_vocab() # Compatibility with existing code
         
-        self.masked_model = AutoModelForMaskedLM.from_pretrained(self.model_name)
-        if "t5" in self.model_name:
-            self.mask = "<extra_id_0>" 
-        else:
+        if self.model_type == "seq2seq":
+            self.masked_model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name)
+            self.mask = "<extra_id_0>" # for t5 only for now 
+        elif self.model_type == "masked":
             self.mask = self.tokenizer.mask_token
+            self.masked_model = AutoModelForMaskedLM.from_pretrained(self.model_name)
         self.masked_model.eval() # EVAL ONLY ?
 
     def _cuda(self):
