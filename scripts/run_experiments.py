@@ -38,11 +38,11 @@ LMs = [
         "lm": "maskedlm",
         "label": label,
         "models_names": ["maskedlm"],
-        "bert_model_name": model_name} for label, model_name in [
-            ("roberta-base","roberta-base"), 
-            ("roberta-large", "roberta-large"),
-            ("longformer-base","allenai/longformer-base-4096"), 
-            ("longformer-large", "allenai/longformer-large-4096"),
+        "model_name": model_name} for label, model_name in [
+            #("roberta-base","roberta-base"), 
+            #("roberta-large", "roberta-large"),
+            #("longformer-base","allenai/longformer-base-4096"), 
+            #("longformer-large", "allenai/longformer-large-4096"),
             ("distilroberta-base","distilroberta-base"), 
             ("bert-base-cased", "bert-base-cased"),
             ("bert-large-cased","bert-large-cased"), 
@@ -195,7 +195,7 @@ def run_experiments(
 
 
 def get_TREx_parameters(data_path_pre="data/"):
-    relations = load_file("{}relations.jsonl".format(data_path_pre))
+    relations = load_file(my_args.relations)
     data_path_pre += "TREx/"
     data_path_post = ".jsonl"
     return relations, data_path_pre, data_path_post

@@ -69,16 +69,16 @@ def init_logging(log_directory):
     )
 
     # file handler
-    fh = logging.FileHandler(str(log_directory) + "/info.log")
-    fh.setLevel(logging.DEBUG)
-    fh.setFormatter(formatter)
+    #fh = logging.FileHandler(str(log_directory) + "/info.log")
+    #fh.setLevel(logging.DEBUG)
+    #fh.setFormatter(formatter)
 
     # console handler
     ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(logging.WARNING)
     ch.setFormatter(formatter)
 
-    logger.addHandler(fh)
+    #logger.addHandler(fh)
     logger.addHandler(ch)
 
     logger.propagate = False
