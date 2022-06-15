@@ -24,7 +24,7 @@ my_parser.add_argument("--lowercase", help="lowercase samples", action="store_tr
 my_parser.add_argument("--output-dir", help="output directory", type=str, default="output")
 my_args = my_parser.parse_args()
 
-LMs = [
+LMs2 = [
     {
         "lm": "causallm",
         "label": "transfo-xl-wt103",
@@ -33,7 +33,7 @@ LMs = [
         } 
 ]
 
-LMs2 = [
+LMs = [
         {
         "lm": "maskedlm",
         "label": label,
@@ -47,16 +47,26 @@ LMs2 = [
             ("bert-base-cased", "bert-base-cased"),
             ("bert-large-cased","bert-large-cased"), 
             ("distilbert-base-cased", "distilbert-base-cased"),
-            #("gpt2","gpt2"),
             #("xlnet-base-cased", "xlnet-base-cased"),
             #("xlnet-large-cased", "xlnet-large-cased"),
             ("bart-base", "facebook/bart-base"),
             ("bart-large", "facebook/bart-large"),
-            #("t5-small","t5-small"),
-            #("t5-base","t5-base"),
-            #("t5-large","t5-large"),
+            ("t5-small","t5-small"),
+            ("t5-base","t5-base"),
+            ("t5-large","t5-large"),
     ]
 ] + [
+    {
+        "lm": "causallm",
+        "label": label,
+        "models_names": ["causallm"],
+        "bert_model_name": model_name} for label, model_name in [
+            ("gpt2","gpt2"),
+            ("transfo-xl-wt103", "transfo-xl-wt103")
+    ]
+] 
+
+ELMO = [
     {
         "lm": "elmo",
         "label": "elmo",
