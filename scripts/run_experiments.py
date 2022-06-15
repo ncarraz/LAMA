@@ -26,10 +26,10 @@ my_args = my_parser.parse_args()
 
 LMs = [
     {
-        "lm": "maskedlm",
-        "label": "t5-large",
-        "models_names": ["maskedlm"],
-        "model_name": "t5-large"
+        "lm": "causallm",
+        "label": "transfo-xl-wt103",
+        "models_names": ["causallm"],
+        "model_name": "transfo-xl-wt103"
         } 
 ]
 
