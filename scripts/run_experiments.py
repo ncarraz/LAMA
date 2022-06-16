@@ -22,7 +22,7 @@ my_parser.add_argument("--relations", help="relations file", type=str, default="
 my_parser.add_argument("--batch-size", help="batch size", type=int, default=128)
 my_parser.add_argument("--lowercase", help="lowercase samples", action="store_true")
 my_parser.add_argument("--output-dir", help="output directory", type=str, default="output")
-my_parser.add_argument("--data-dir", help="dataset directory", type=str, default="TREX")
+my_parser.add_argument("--data-dir", help="dataset directory", type=str, default="TREx")
 my_args = my_parser.parse_args()
 
 LMs2 = [
