@@ -121,7 +121,7 @@ def run_experiments(
             ),
             "common_vocab_filename": "pre-trained_language_models/common_vocab_lowercased.txt" if my_args.lowercase else "pre-trained_language_models/common_vocab_cased.txt",
             "template": "",
-            "batch_size": my_args.batch_size,
+            "batch_size": 32 if input_param["model_name"] == "transfo-xl-wt103" else my_args.batch_size,
             "logdir": "output",
             "full_logdir": os.path.join(output_dir, relation["relation"]),
             "lowercase": my_args.lowercase,
