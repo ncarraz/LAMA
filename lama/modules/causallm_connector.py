@@ -42,21 +42,19 @@ class CausalLM(Base_Connector):
     def get_batch_generation(self, sentences_list, logger=None, try_cuda=True):
         if try_cuda:
             self.try_cuda()
-
         # Replace the added [MASK] token with EOS token to make embeddings work
         sentences_list = [self.tokenizer.eos_token + item for sublist in sentences_list for item in sublist]
-        output = self.tokenizer(sentences_list, padding=True, return_tensors="pt").input_ids
-        masked_indices_list = np.argwhere(output.numpy() == self.tokenizer.mask_token_id)[:,1] - 1 
+        input = self.tokenizer(sentences_list, padding=True, return_tensors="pt").input_ids
+        masked_indices_list = np.argwhere(input.numpy() == self.tokenizer.mask_token_id)[:,1] - 1 
         masked_indices_list = [[i] for i in masked_indices_list]
-        output = torch.where(output == self.tokenizer.mask_token_id, self.tokenizer.eos_token_id, output)
+        input = torch.where(input == self.tokenizer.mask_token_id, self.tokenizer.eos_token_id, input)
         with torch.no_grad():
-            log_probs = self.model(output.to(self._model_device))
+            log_probs = self.model(input.to(self._model_device))
             if self.model_name == "transfo-xl-wt103":
                 log_probs = log_probs.prediction_scores.cpu()
             else:
                 log_probs = log_probs.logits.cpu()
-
-        return log_probs, list(output.cpu().numpy()), masked_indices_list
+        return log_probs, list(input.cpu().numpy()), masked_indices_list
 
     def get_contextual_embeddings(self, batched_sentence_list):
         pass
