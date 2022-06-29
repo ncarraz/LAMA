@@ -25,14 +25,14 @@ CASED_MODELS = [{
             ("bert-base-cased", "bert-base-cased"),
             ("bert-large-cased","bert-large-cased"), 
             ("distilbert-base-cased", "distilbert-base-cased"),
-            #("gpt2","gpt2"),
+            ("gpt2","gpt2"),
             #("xlnet-base-cased", "xlnet-base-cased"),
             #("xlnet-large-cased", "xlnet-large-cased"),
             ("bart-base", "facebook/bart-base"),
             ("bart-large", "facebook/bart-large"),
-            #("t5-small","t5-small"),
-            #("t5-base","t5-base"),
-            #("t5-large","t5-large"),
+            ("t5-small","t5-small"),
+            ("t5-base","t5-base"),
+            ("t5-large","t5-large"),
     ]
 ] + [
  {
