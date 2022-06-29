@@ -17,6 +17,7 @@ class MaskedLM(Base_Connector):
         if self.model_type == "seq2seq":
             self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name)
             self.mask = "<extra_id_0>" # for t5 only for now 
+            self.tokenizer.mask_token = self.mask
         elif self.model_type == "masked":
             self.mask = self.tokenizer.mask_token
             self.model = AutoModelForMaskedLM.from_pretrained(self.model_name)
