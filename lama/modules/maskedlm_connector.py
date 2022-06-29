@@ -43,7 +43,7 @@ class MaskedLM(Base_Connector):
         masked_indices_list = np.argwhere(input.input_ids.numpy() == self.tokenizer.mask_token_id)[:,1]
         masked_indices_list = [[i] for i in masked_indices_list]
         with torch.no_grad():
-            input['labels'] =  input['input_ids'] if 't5' in self.model.model_name else None
+            input['labels'] =  input['input_ids'] if 't5' in self.model_name else None
             scores = self.model(**input.to(self._model_device)).logits
             log_probs = F.log_softmax(scores, dim=-1).cpu()
         # second returned value is off for seq2seq
