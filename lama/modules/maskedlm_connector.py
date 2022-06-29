@@ -15,15 +15,15 @@ class MaskedLM(Base_Connector):
         self._init_vocab() # Compatibility with existing code
         
         if self.model_type == "seq2seq":
-            self.masked_model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name)
+            self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name)
             self.mask = "<extra_id_0>" # for t5 only for now 
         elif self.model_type == "masked":
             self.mask = self.tokenizer.mask_token
-            self.masked_model = AutoModelForMaskedLM.from_pretrained(self.model_name)
-        self.masked_model.eval() # EVAL ONLY ?
+            self.model = AutoModelForMaskedLM.from_pretrained(self.model_name)
+        self.model.eval() # EVAL ONLY ?
 
     def _cuda(self):
-        self.masked_model.cuda()
+        self.model.cuda()
     
     def get_id(self, string):
         if "bpe" in self.tokenization:
@@ -44,7 +44,7 @@ class MaskedLM(Base_Connector):
         masked_indices_list = [[i] for i in masked_indices_list]
         with torch.no_grad():
             input['labels'] =  input['input_ids'] if 't5' in self.model.model_name else None
-            scores = self.masked_model(**input.to(self._model_device)).logits
+            scores = self.model(**input.to(self._model_device)).logits
             log_probs = F.log_softmax(scores, dim=-1).cpu()
         # second returned value is off for seq2seq
         return log_probs, list(input.input_ids.cpu().numpy()), masked_indices_list
