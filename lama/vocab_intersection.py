@@ -34,6 +34,18 @@ CASED_MODELS = [{
             ("t5-base","t5-base"),
             ("t5-large","t5-large"),
     ]
+] + [{
+        "lm": "causallm",
+        "label": "gpt2",
+        "models_names": ["causallm"],
+        "model_name": "gpt2"}, 
+    {
+        "lm": "causallm",
+        "label": "transfo-xl-wt103",
+        "models_names": ["causallm"],
+        "model_name": "transfo-xl-wt103",
+        "batch_size": 32
+        }
 ] + [
  {
     # "ELMO ORIGINAL"
