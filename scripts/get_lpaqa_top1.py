@@ -6,6 +6,8 @@ import argparse
 my_parser = argparse.ArgumentParser(description='Get the top-1 prompt for LPAQA')
 my_parser.add_argument("--relation-dir", help="relations directory", type=str, default="data/TREx/")
 my_parser.add_argument("--relation-file", help="relation file", type=str)
+my_parser.add_argument("--output-dir", help="relation file", type=str, default=".")
+
 my_args = my_parser.parse_args()
 
 dir = my_args.relation_dir
@@ -24,6 +26,7 @@ result = pd.concat([combined_relation, df], axis=1)
 max_index = result.groupby("relation")["score"].idxmax()
 
 relation_final = result.iloc[max_index][["relation","template"]]
-output_file = "top_1_lpaqa_" + my_args.relation_file.rsplit(".",1)[0] + ".jsonl"
-with open(output_file, "w") as outfile:
+relation_file = os.path.basename(my_args.relation_file)
+output_file = "top_1_lpaqa_" + relation_file.rsplit(".",1)[0] + ".jsonl"
+with open(os.path.join(my_args.output_dir, output_file), "w") as outfile:
         outfile.write(relation_final.to_json(orient="records", lines=True))
