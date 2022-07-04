@@ -116,7 +116,7 @@ def run_experiments(
 
     output_dir = os.path.join(my_args.output_dir, "results",os.path.basename(my_args.relations).split(".")[0], input_param["label"])
     output_file = open("results/{}.csv".format(os.path.basename(my_args.relations).split(".")[0]), "a")
-
+    os.makedirs("results", exist_ok=True)
     for relation in relations:
         pp.pprint(relation)
         PARAMETERS = {
