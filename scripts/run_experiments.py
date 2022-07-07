@@ -28,10 +28,13 @@ my_args = my_parser.parse_args()
 LMs2 = [
     {
         "lm": "causallm",
-        "label": "transfo-xl-wt103",
+        "label": label,
         "models_names": ["causallm"],
-        "model_name": "transfo-xl-wt103"
-        } 
+        "model_name": model_name} for label, model_name in [
+            ("gpt2-medium","gpt2-medium"),
+            ("gpt2-large","gpt2-large"),
+            #("gpt2-xl","gpt2-xl")
+        ]
 ]
 
 LMs = [
@@ -59,9 +62,15 @@ LMs = [
 ] + [
     {
         "lm": "causallm",
-        "label": "gpt2",
+        "label": label,
         "models_names": ["causallm"],
-        "model_name": "gpt2"}, 
+        "model_name": model_name} for label, model_name in [
+            ("gpt2", "gpt2"),
+            ("gpt2-medium","gpt2-medium"),
+            ("gpt2-large","gpt2-large"),
+            ("gpt2-xl","gpt2-xl")
+        ]
+] + [
     {
         "lm": "causallm",
         "label": "transfo-xl-wt103",

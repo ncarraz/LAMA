@@ -51,7 +51,11 @@ TOKENIZATION = {
     "t5-small":"sentencepiece",
     "t5-base":"sentencepiece",
     "t5-large":"sentencepiece",
+    "t5-3b":"sentencepiece",
     "gpt2":"bpe",
+    "gpt2-medium":"bpe",
+    "gpt2-large":"bpe",
+    "gpt2-xl":"bpe",
     "xlnet-base-cased":"sentencepiece",
     "xlnet-large-cased":"sentencepiece",
     "transfo-xl-wt103":"word"
@@ -67,13 +71,17 @@ LM_TYPE = {
      "bert-large-cased":"masked",
      "distilbert-base-cased":"masked",
      "gpt2":"causal",
+     "gpt2-medium":"causal",
+     "gpt2-large":"causal",
+     "gpt2-xl":"causal",
      "xlnet-base-cased":"causal",
      "xlnet-large-cased":"causal",
      "facebook/bart-base":"masked",
      "facebook/bart-large":"masked",
      "t5-small":"seq2seq",
      "t5-base":"seq2seq",
-     "t5-large":"seq2seq"
+     "t5-large":"seq2seq",
+     "t5-3b":"seq2seq"
  }
 
 

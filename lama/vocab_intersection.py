@@ -18,19 +18,19 @@ CASED_MODELS = [{
         "models_names": ["maskedlm"],
         "model_name": model_name,} for label, model_name in [
             ("roberta-base","roberta-base"), 
-            ("roberta-large", "roberta-large"),
-            ("longformer-base","allenai/longformer-base-4096"), 
-            ("longformer-large", "allenai/longformer-large-4096"),
+            #("roberta-large", "roberta-large"),
+            #("longformer-base","allenai/longformer-base-4096"), 
+            #("longformer-large", "allenai/longformer-large-4096"),
             ("distilroberta-base","distilroberta-base"), 
-            ("bert-base-cased", "bert-base-cased"),
+            #("bert-base-cased", "bert-base-cased"),
             ("bert-large-cased","bert-large-cased"), 
             ("distilbert-base-cased", "distilbert-base-cased"),
             #("xlnet-base-cased", "xlnet-base-cased"),
             #("xlnet-large-cased", "xlnet-large-cased"),
             ("bart-base", "facebook/bart-base"),
             ("bart-large", "facebook/bart-large"),
-            ("t5-small","t5-small"),
-            ("t5-base","t5-base"),
+            #("t5-small","t5-small"),
+            #("t5-base","t5-base"),
             ("t5-large","t5-large"),
     ]
 ] + [{
@@ -45,7 +45,9 @@ CASED_MODELS = [{
         "model_name": "transfo-xl-wt103",
         "batch_size": 32
         }
-] + [
+] 
+
+elmo = [
  {
     # "ELMO ORIGINAL"
     "lm": "elmo",
