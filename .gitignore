@@ -78,4 +78,5 @@ data
 pre-trained_language_models
 lpaqa_prompts/
 last_*
+OLD_autoprompt_results/
 .nfs*

@@ -27,14 +27,11 @@ my_args = my_parser.parse_args()
 
 LMs2 = [
     {
-        "lm": "causallm",
-        "label": label,
-        "models_names": ["causallm"],
-        "model_name": model_name} for label, model_name in [
-            ("gpt2-medium","gpt2-medium"),
-            ("gpt2-large","gpt2-large"),
-            #("gpt2-xl","gpt2-xl")
-        ]
+        "lm": "maskedlm",
+        "label": "robert-large",
+        "models_names": ["maskedlm"],
+        "model_name": "roberta-large",
+    }
 ]
 
 LMs = [
@@ -45,8 +42,8 @@ LMs = [
         "model_name": model_name} for label, model_name in [
             ("roberta-base","roberta-base"), 
             ("roberta-large", "roberta-large"),
-            ("longformer-base","allenai/longformer-base-4096"), 
-            ("longformer-large", "allenai/longformer-large-4096"),
+            #("longformer-base","allenai/longformer-base-4096"), 
+            #("longformer-large", "allenai/longformer-large-4096"),
             ("distilroberta-base","distilroberta-base"), 
             ("bert-base-cased", "bert-base-cased"),
             ("bert-large-cased","bert-large-cased"), 
@@ -68,14 +65,13 @@ LMs = [
             ("gpt2", "gpt2"),
             ("gpt2-medium","gpt2-medium"),
             ("gpt2-large","gpt2-large"),
-            ("gpt2-xl","gpt2-xl")
         ]
 ] + [
     {
         "lm": "causallm",
-        "label": "transfo-xl-wt103",
+        "label": "gpt2-xl",
         "models_names": ["causallm"],
-        "model_name": "transfo-xl-wt103",
+        "model_name": "gpt2-xl",
         "batch_size": 32
         }
 ] 
