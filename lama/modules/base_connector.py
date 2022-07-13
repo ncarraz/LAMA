@@ -60,6 +60,8 @@ TOKENIZATION = {
     "xlnet-large-cased":"sentencepiece",
     "transfo-xl-wt103":"word"
 }
+TOKENIZATION_MB = {"google/multiberts-seed_{}".format(i):"wordpiece" for i in range(25)}
+TOKENIZATION.update(TOKENIZATION_MB)
 
 LM_TYPE = {
      "roberta-base":"masked",
@@ -84,6 +86,8 @@ LM_TYPE = {
      "t5-3b":"seq2seq"
  }
 
+LM_TYPE_MB = {"google/multiberts-seed_{}".format(i):"masked" for i in range(25)}
+LM_TYPE.update(LM_TYPE_MB)
 
 def default_tokenizer(line):
     """Default tokenizer for models that don't have one

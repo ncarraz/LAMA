@@ -25,16 +25,16 @@ my_parser.add_argument("--output-dir", help="output directory", type=str, defaul
 my_parser.add_argument("--data-dir", help="dataset directory", type=str, default="TREx")
 my_args = my_parser.parse_args()
 
-LMs2 = [
+LMs = [
     {
         "lm": "maskedlm",
-        "label": "robert-large",
+        "label": "google/multiberts-seed_{}".format(i),
         "models_names": ["maskedlm"],
-        "model_name": "roberta-large",
-    }
+        "model_name": "google/multiberts-seed_{}".format(i),
+    } for i in range(25)
 ]
 
-LMs = [
+LMs2 = [
         {
         "lm": "maskedlm",
         "label": label,
