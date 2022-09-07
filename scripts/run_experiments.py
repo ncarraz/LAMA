@@ -25,16 +25,17 @@ my_parser.add_argument("--output-dir", help="output directory", type=str, defaul
 my_parser.add_argument("--data-dir", help="dataset directory", type=str, default="TREx")
 my_args = my_parser.parse_args()
 
-LMs = [
-    {
-        "lm": "maskedlm",
-        "label": "google/multiberts-seed_{}".format(i),
-        "models_names": ["maskedlm"],
-        "model_name": "google/multiberts-seed_{}".format(i),
-    } for i in range(25)
-]
 
-LMs2 = [
+LMs_multiberts = [
+      {
+          "lm": "maskedlm",
+          "label": "google/multiberts-seed_{}".format(i),
+          "models_names": ["maskedlm"],
+          "model_name": "google/multiberts-seed_{}".format(i),
+      } for i in range(25)
+ ]
+
+LMs = [
         {
         "lm": "maskedlm",
         "label": label,
@@ -76,27 +77,6 @@ LMs2 = [
         }
 ] 
 
-ELMO = [
-    {
-        "lm": "elmo",
-        "label": "elmo",
-        "models_names": ["elmo"],
-        "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway",
-        "elmo_vocab_name": "vocab-2016-09-10.txt",
-        "elmo_model_dir": "pre-trained_language_models/elmo/original",
-        "elmo_warm_up_cycles": 10,
-    },
-    {
-        "lm": "elmo",
-        "label": "elmo5B",
-        "models_names": ["elmo"],
-        "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway_5.5B",
-        "elmo_vocab_name": "vocab-enwiki-news-500000.txt",
-        "elmo_model_dir": "pre-trained_language_models/elmo/original5.5B/",
-        "elmo_warm_up_cycles": 10,
-    },
-]
-
 
 def run_experiments(
     relations,
@@ -128,7 +108,7 @@ def run_experiments(
             "dataset_filename": "{}{}{}".format(
                 data_path_pre, relation["relation"], data_path_post
             ),
-            "common_vocab_filename": "pre-trained_language_models/common_vocab_lowercased.txt" if my_args.lowercase else "pre-trained_language_models/common_vocab_cased.txt",
+            "common_vocab_filename": "vocabs/common_vocab_lowercased.txt" if my_args.lowercase else "vocabs/common_vocab_cased.txt",
             "template": "",
             "batch_size": my_args.batch_size,
             "logdir": "output",

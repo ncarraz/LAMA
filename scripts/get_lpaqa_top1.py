@@ -4,7 +4,7 @@ import argparse
 
 
 my_parser = argparse.ArgumentParser(description='Get the top-1 prompt for LPAQA')
-my_parser.add_argument("--relation-dir", help="relations directory", type=str, default="data/TREx/")
+my_parser.add_argument("--relation-dir", help="relations directory", type=str, default="data/lpaqa_manual_paraphrase_relations/")
 my_parser.add_argument("--relation-file", help="relation file", type=str)
 my_parser.add_argument("--output-dir", help="relation file", type=str, default=".")
 

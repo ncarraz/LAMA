@@ -78,5 +78,8 @@ data
 pre-trained_language_models
 lpaqa_prompts/
 last_*
-OLD_autoprompt_results/
 .nfs*
+RESULTS/
+OLD_RESULTS/
+scripts/run_experiments_multiberts.py
+scripts/get_lpaqa_top1.py

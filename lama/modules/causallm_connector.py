@@ -49,6 +49,7 @@ class CausalLM(Base_Connector):
         masked_indices_list = [[i] for i in masked_indices_list]
         input = torch.where(input == self.tokenizer.mask_token_id, self.tokenizer.eos_token_id, input)
         with torch.no_grad():
+            print(sentences_list, input[0])
             log_probs = self.model(input.to(self._model_device))
             if self.model_name == "transfo-xl-wt103":
                 log_probs = log_probs.prediction_scores.cpu()
