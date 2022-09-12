@@ -60,7 +60,7 @@ def init_logging(log_directory):
     logger = logging.getLogger("LAMA")
     logger.setLevel(logging.DEBUG)
 
-    os.makedirs(log_directory, exist_ok=True)
+    #os.makedirs(log_directory, exist_ok=True)
 
     # logging format
     # "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -348,8 +348,8 @@ def main(args, shuffle_data=True, model=None):
     logger.info("\n" + msg + "\n")
 
     # dump arguments on file for log
-    with open("{}/args.json".format(log_directory), "w") as outfile:
-        json.dump(vars(args), outfile)
+    #with open("{}/args.json".format(log_directory), "w") as outfile:
+    #    json.dump(vars(args), outfile)
 
     # stats
     samples_with_negative_judgement = 0
