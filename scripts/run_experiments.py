@@ -16,60 +16,66 @@ from os.path import isfile, join
 from shutil import copyfile
 from collections import defaultdict
 
-my_parser = argparse.ArgumentParser(description='name of the relations file')
+
+my_parser = argparse.ArgumentParser(description='Evaluate LMs on a relation')
 my_parser.add_argument("--relations", help="relations file", type=str, default="data/relations.jsonl")
 my_parser.add_argument("--batch-size", help="batch size", type=int, default=128)
 my_parser.add_argument("--lowercase", help="lowercase samples", action="store_true")
+my_parser.add_argument("--output-dir", help="output directory", type=str, default="output")
+my_parser.add_argument("--data-dir", help="dataset directory", type=str, default="TREx")
 my_args = my_parser.parse_args()
 
+
+LMs_multiberts = [
+      {
+          "lm": "maskedlm",
+          "label": "google/multiberts-seed_{}".format(i),
+          "models_names": ["maskedlm"],
+          "model_name": "google/multiberts-seed_{}".format(i),
+      } for i in range(25)
+ ]
+
 LMs = [
-    #{
-     #   "lm": "bert",
-     #   "label": "bert_base",
-    #    "models_names": ["bert"],
-    #    "bert_model_name": "bert-base-cased",
-    #},
-    #{
-    #    "lm": "bert",
-    #    "label": "distilbert",
-    #    "models_names": ["bert"],
-    #   "bert_model_name": "distilbert-base-cased",
-    #},
-    #{
-     #   "lm": "roberta",
-     #   "label": "roberta",
-     #   "models_names": ["roberta"],
-     #   "roberta_model_name": "model.pt",
-     #   "roberta_model_dir": "pre-trained_language_models/roberta/roberta.large/",
-     #   "roberta_vocab_name": "dict.txt",
-     #   "max_sentence_length": 100
-     #},
+        {
+        "lm": "maskedlm",
+        "label": label,
+        "models_names": ["maskedlm"],
+        "model_name": model_name} for label, model_name in [
+            ("roberta-base","roberta-base"), 
+            ("roberta-large", "roberta-large"),
+            #("longformer-base","allenai/longformer-base-4096"), 
+            #("longformer-large", "allenai/longformer-large-4096"),
+            ("distilroberta-base","distilroberta-base"), 
+            ("bert-base-cased", "bert-base-cased"),
+            ("bert-large-cased","bert-large-cased"), 
+            ("distilbert-base-cased", "distilbert-base-cased"),
+            #("xlnet-base-cased", "xlnet-base-cased"),
+            #("xlnet-large-cased", "xlnet-large-cased"),
+            ("bart-base", "facebook/bart-base"),
+            ("bart-large", "facebook/bart-large"),
+            ("t5-small","t5-small"),
+            ("t5-base","t5-base"),
+            ("t5-large","t5-large"),
+    ]
+] + [
     {
-        "lm": "bert",
-        "label": "bert_base_uncased",
-        "models_names": ["bert"],
-        "bert_model_name": "bert-base-uncased",
-    },
-     {
-        "lm": "bert",
-        "label": "electra_large",
-        "models_names": ["bert"],
-        "bert_model_name": "google/electra-large-generator",
-    },
+        "lm": "causallm",
+        "label": label,
+        "models_names": ["causallm"],
+        "model_name": model_name} for label, model_name in [
+            ("gpt2", "gpt2"),
+            ("gpt2-medium","gpt2-medium"),
+            ("gpt2-large","gpt2-large"),
+        ]
+] + [
     {
-        "lm": "bert",
-        "label": "ernie-2.0-large-en",
-        "models_names": ["bert"],
-        "bert_model_name": "nghuyong/ernie-2.0-large-en",
-    },
-] #+ [
-  #  {
-  #      "lm": "bert",
-  #      "label": "multiberts-seed_{}".format(i),
-  #      "models_names": ["bert"],
-  #      "bert_model_name": "google/multiberts-seed_{}".format(i),
-  #  } for i in range(0, 25)
-#]
+        "lm": "causallm",
+        "label": "gpt2-xl",
+        "models_names": ["causallm"],
+        "model_name": "gpt2-xl",
+        "batch_size": 32
+        }
+] 
 
 
 def run_experiments(
@@ -89,12 +95,13 @@ def run_experiments(
     pp = pprint.PrettyPrinter(width=41, compact=True)
 
     all_Precision1 = []
+    all_Precision10 = []
     type_Precision1 = defaultdict(list)
     type_count = defaultdict(list)
 
-    results_file = open("last_results.csv", "w+")
-    output_file = open("output_results_{}.csv".format(os.path.splitext(os.path.basename(my_args.relations))[0]), "a")
-
+    output_dir = os.path.join(my_args.output_dir, "results",os.path.basename(my_args.relations).split(".")[0], input_param["label"])
+    output_file = open("results/{}.csv".format(os.path.basename(my_args.relations).split(".")[0]), "a")
+    os.makedirs("results", exist_ok=True)
     for relation in relations:
         pp.pprint(relation)
         common_vocab_file = "common_vocab_lowercased.txt" if my_args.lowercase else "common_vocab_cased.txt"
@@ -102,14 +109,11 @@ def run_experiments(
             "dataset_filename": "{}{}{}".format(
                 data_path_pre, relation["relation"], data_path_post
             ),
-            "common_vocab_filename": "pre-trained_language_models/{}".format(common_vocab_file),
+            "common_vocab_filename": "vocabs/common_vocab_lowercased.txt" if my_args.lowercase else "vocabs/common_vocab_cased.txt",
             "template": "",
-            "bert_vocab_name": "vocab.txt",
             "batch_size": my_args.batch_size,
             "logdir": "output",
-            "full_logdir": "output/results/{}/{}".format(
-                input_param["label"], relation["relation"]
-            ),
+            "full_logdir": os.path.join(output_dir, relation["relation"]),
             "lowercase": my_args.lowercase,
             "max_sentence_length": 100,
             "threads": -1,
@@ -139,10 +143,12 @@ def run_experiments(
             [model_type_name] = args.models_names
             model = build_model_by_name(model_type_name, args)
 
-        Precision1 = run_evaluation(args, shuffle_data=False, model=model)
+        Precision1, Precision10 = run_evaluation(args, shuffle_data=False, model=model)
         print("P@1 : {}".format(Precision1), flush=True)
         all_Precision1.append(Precision1)
+        all_Precision10.append(Precision10)
 
+        results_file = open(os.path.join(output_dir, "result.csv"), "a+")
         results_file.write(
             "{},{}\n".format(relation["relation"], round(Precision1 * 100, 2))
         )
@@ -154,8 +160,11 @@ def run_experiments(
             type_count[relation["type"]].append(len(data))
             
     mean_p1 = statistics.mean(all_Precision1)
+    mean_p10 = statistics.mean(all_Precision10)
     print("@@@ {} - mean P@1: {}".format(input_param["label"], mean_p1))
-    output_file.write("{},Total,{}\n".format(input_param["label"], mean_p1))
+    print("@@@ {} - mean P@10: {}".format(input_param["label"], mean_p10))
+    output_file.write("{},P@1,{}\n".format(input_param["label"], mean_p1))
+    output_file.write("{},P@10,{}\n".format(input_param["label"], mean_p10))
     results_file.close()
     
     for t, l in type_Precision1.items():
@@ -164,18 +173,20 @@ def run_experiments(
             t,
             statistics.mean(l),
             sum(type_count[t]),
-            len(type_count[t]), flush=True
-            )
-        
-        output_file.write("{},{},{}\n".format(input_param["label"], t, statistics.mean(l)))
+            len(type_count[t]),
+            flush=True,
+        )
+
+        # output_file.write("{},{},{}\n".format(input_param["label"], t, statistics.mean(l)))
     output_file.close()
+
     return mean_p1, all_Precision1
 
 
 
 def get_TREx_parameters(data_path_pre="data/"):
-    relations = load_file("{}".format(my_args.relations))
-    data_path_pre += "TREx/"
+    relations = load_file(my_args.relations)
+    data_path_pre += "{}/".format(my_args.data_dir)
     data_path_post = ".jsonl"
     return relations, data_path_pre, data_path_post
 
@@ -224,19 +235,21 @@ def run_all_LMs(parameters):
 
 
 if __name__ == "__main__":
-
-    #print("1. Google-RE")
-    #parameters = get_GoogleRE_parameters()
-    #run_all_LMs(parameters)
-
-    #print("2. T-REx")
-    parameters = get_TREx_parameters()
+    """
+    print("1. Google-RE")
+    parameters = get_GoogleRE_parameters()
     run_all_LMs(parameters)
 
-    #print("3. ConceptNet")
-    #parameters = get_ConceptNet_parameters()
-    #run_all_LMs(parameters)
+    print("2. T-REx")
+    """
+    parameters = get_TREx_parameters()
+    run_all_LMs(parameters)
+    """
+    print("3. ConceptNet")
+    parameters = get_ConceptNet_parameters()
+    run_all_LMs(parameters)
 
-    #print("4. SQuAD")
-    #parameters = get_Squad_parameters()
-    #run_all_LMs(parameters)
+    print("4. SQuAD")
+    parameters = get_Squad_parameters()
+    run_all_LMs(parameters)
+    """

@@ -37,6 +37,57 @@ SPECIAL_SYMBOLS = [
 
 SPACE_NORMALIZER = re.compile(r"\s+")
 
+TOKENIZATION = {
+    "roberta-base":"bpe",
+    "roberta-large":"bpe",
+    "allenai/longformer-base-4096":"bpe",
+    "allenai/longformer-large-4096":"bpe",
+    "distilroberta-base":"bpe",
+    "bert-base-cased":"wordpiece",
+    "bert-large-cased":"wordpiece",
+    "distilbert-base-cased":"wordpiece",
+    "facebook/bart-base":"bpe",
+    "facebook/bart-large":"bpe",
+    "t5-small":"sentencepiece",
+    "t5-base":"sentencepiece",
+    "t5-large":"sentencepiece",
+    "t5-3b":"sentencepiece",
+    "gpt2":"bpe",
+    "gpt2-medium":"bpe",
+    "gpt2-large":"bpe",
+    "gpt2-xl":"bpe",
+    "xlnet-base-cased":"sentencepiece",
+    "xlnet-large-cased":"sentencepiece",
+    "transfo-xl-wt103":"word"
+}
+TOKENIZATION_MB = {"google/multiberts-seed_{}".format(i):"wordpiece" for i in range(25)}
+TOKENIZATION.update(TOKENIZATION_MB)
+
+LM_TYPE = {
+     "roberta-base":"masked",
+     "roberta-large":"masked",
+     "allenai/longformer-base-4096":"masked",
+     "allenai/longformer-large-4096":"masked",
+     "distilroberta-base":"masked",
+     "bert-base-cased":"masked",
+     "bert-large-cased":"masked",
+     "distilbert-base-cased":"masked",
+     "gpt2":"causal",
+     "gpt2-medium":"causal",
+     "gpt2-large":"causal",
+     "gpt2-xl":"causal",
+     "xlnet-base-cased":"causal",
+     "xlnet-large-cased":"causal",
+     "facebook/bart-base":"masked",
+     "facebook/bart-large":"masked",
+     "t5-small":"seq2seq",
+     "t5-base":"seq2seq",
+     "t5-large":"seq2seq",
+     "t5-3b":"seq2seq"
+ }
+
+LM_TYPE_MB = {"google/multiberts-seed_{}".format(i):"masked" for i in range(25)}
+LM_TYPE.update(LM_TYPE_MB)
 
 def default_tokenizer(line):
     """Default tokenizer for models that don't have one
@@ -84,6 +135,34 @@ class Base_Connector():
 
     def _init_inverse_vocab(self):
         self.inverse_vocab = {w: i for i, w in enumerate(self.vocab)}
+    
+    def _init_vocab(self):
+        if self.tokenization in ["bpe", "sentencepiece"]: 
+            # Convert vocabulary to BERT
+            special_tokens = [self.tokenizer.bos_token, self.tokenizer.eos_token, self.tokenizer.unk_token,
+                            self.tokenizer.sep_token, self.tokenizer.pad_token, self.tokenizer.cls_token,
+                            self.tokenizer.mask_token]
+            separator_tokens = {"bpe":"Ġ", "sentencepiece":"▁"}
+            sep_token = separator_tokens[self.tokenization]
+            converted_vocab = {}
+            for w, i in self.tokenizer.vocab.items():
+                value = w
+                if value[0] == sep_token:  # if the token starts with a whitespace
+                    value = value[1:]
+                elif value not in special_tokens:
+                    # this is subword information
+                    value = "_{}_".format(value)
+
+                if value in converted_vocab:
+                    # print("WARNING: token '{}' is already in the vocab".format(value))
+                    value = "{}_{}".format(value, i)
+                converted_vocab[value] = i
+        else:
+            converted_vocab = self.tokenizer.vocab
+
+        # Compatibility with existing code
+        self.vocab = list(dict(sorted(converted_vocab.items(), key=lambda item: item[1])).keys())
+        self.inverse_vocab = converted_vocab
 
     def try_cuda(self):
         """Move model to GPU if one is available."""

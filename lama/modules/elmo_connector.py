@@ -55,6 +55,7 @@ class Elmo(Base_Connector):
         self.unk_index = self.inverse_vocab[ELMO_UNK]
         
         self.warm_up_cycles = args.elmo_warm_up_cycles
+        self.mask = "[MASK]"
 
     def __init_vocab(self, dict_file):
         with open(dict_file, "r") as f:
