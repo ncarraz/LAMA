@@ -100,8 +100,8 @@ def run_experiments(
     type_count = defaultdict(list)
 
     output_dir = os.path.join(my_args.output_dir, "results",os.path.basename(my_args.relations).split(".")[0], input_param["label"])
-    output_file = open("results/{}.csv".format(os.path.basename(my_args.relations).split(".")[0]), "a")
     os.makedirs("results", exist_ok=True)
+    output_file = open("results/{}.csv".format(os.path.basename(my_args.relations).split(".")[0]), "a")
     for relation in relations:
         pp.pprint(relation)
         common_vocab_file = "common_vocab_lowercased.txt" if my_args.lowercase else "common_vocab_cased.txt"
